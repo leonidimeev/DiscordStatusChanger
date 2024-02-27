@@ -5,10 +5,16 @@ using Newtonsoft.Json;
 class Program
 {
     public static string Mode { get; set; } = default!;
-    public static AppOptions AppOptions { get; set; } = default!;
-    public static IConfigurationRoot Configuration { get; set; } = default!;
+    private AppOptions AppOptions { get; set; } = default!;
+    private IConfigurationRoot Configuration { get; set; } = default!;
 
     static async Task Main(string[] args)
+    {
+        Program program = new Program();
+        await program.RunAsync();
+    }
+
+    private async Task RunAsync()
     {
         // Build configuration
         Configuration = new ConfigurationBuilder()
@@ -21,11 +27,11 @@ class Program
         AppOptions = JsonConvert.DeserializeObject<AppOptions>(Configuration.GetSection(AppOptions.Position).Value!)!;
 
         // Instantiate classes
-        ProgramLogic programLogic = new ProgramLogic();
-        UserInputHandler userInputHandler = new UserInputHandler();
+        App app = new App(AppOptions);
+        UserInputHandler userInputHandler = new UserInputHandler(AppOptions);
 
         // Start tasks
-        Task programLogicTask = Task.Run(() => programLogic.Run());
+        Task programLogicTask = Task.Run(() => app.Run());
         Task userInputTask = Task.Run(() => userInputHandler.HandleInput());
 
         // Wait for tasks to complete

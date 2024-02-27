@@ -1,7 +1,10 @@
-﻿namespace DiscordStatusScheduler;
+﻿
+namespace DiscordStatusScheduler;
 
 internal class DefaultModes
 {
+    public static string ExitMode = "Exit";
+
     private List<Mode> _defaultModes = new List<Mode>()
     {
         new Mode()
@@ -9,6 +12,10 @@ internal class DefaultModes
             Name = "Default",
             StatusChangeFrequency = 1,
             StatusSet = new List<string>{ "Hello c:", "I am using DiscordStatusScheduler!"}
+        },
+        new Mode()
+        {
+            Name = "Exit"
         }
     };
 

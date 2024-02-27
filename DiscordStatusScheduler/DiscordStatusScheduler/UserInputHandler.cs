@@ -2,16 +2,37 @@
 
 internal class UserInputHandler
 {
+    private readonly AppOptions _appOptions;
+
+    public UserInputHandler(AppOptions appOptions)
+    {
+        _appOptions = appOptions;
+    }
+
     public void HandleInput()
     {
         while (true)
         {
             string userInput = Console.ReadLine();
 
-            if (!string.IsNullOrEmpty(userInput))
+            if (userInput != null)
             {
-                Console.WriteLine($"Switching to {userInput} mode...");
-                Program.Mode = userInput;
+                if (userInput.ToLower() == "exit")
+                {
+                    Program.Mode = DefaultModes.ExitMode;
+                }
+
+                var switchingMode = _appOptions.Modes.FirstOrDefault(x => x.Name == userInput);
+
+                if (switchingMode != null)
+                {
+                    Console.WriteLine($"Switching to {userInput} mode...");
+                    Program.Mode = userInput;
+                }
+                else
+                {
+                    Console.WriteLine($"Mode {userInput} not found!");
+                }
             }
         }
     }
