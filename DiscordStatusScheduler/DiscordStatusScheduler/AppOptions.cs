@@ -2,7 +2,6 @@
 
 public class AppOptions
 {
-    public const string Position = "App";
-
-    public List<Mode> Modes { get; set; } = new List<Mode>();
+    public string DiscordApiUrl { get; set; }
+    public UserOptions UserOptions { get; set; }
 }

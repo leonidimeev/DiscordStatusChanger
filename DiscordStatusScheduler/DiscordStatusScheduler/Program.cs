@@ -1,16 +1,17 @@
 ﻿using DiscordStatusScheduler;
 using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using System.Reflection;
 
 class Program
 {
-    public static string Mode { get; set; } = default!;
+    public static Mode Mode { get; set; } = default!;
+    public static bool SwitchingStatusProcessing { get; set; } = false;
     private AppOptions AppOptions { get; set; } = default!;
     private IConfigurationRoot Configuration { get; set; } = default!;
 
     static async Task Main(string[] args)
     {
-        Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
+        Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress!);
 
         Program program = new Program();
         await program.RunAsync();
@@ -18,21 +19,27 @@ class Program
 
     private async Task RunAsync()
     {
+        // Get the directory containing the compiled DLL file
+        string dllDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        if (dllDirectory == null)
+        {
+            // Handle the case where the directory cannot be determined
+            throw new InvalidOperationException("Unable to determine the directory of the compiled DLL file.");
+        }
+
         // Build configuration
         Configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
+            .SetBasePath(dllDirectory)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
             .AddJsonFile("appsettings.local.json", optional: true, reloadOnChange: true)
             .Build();
 
         // Configure AppOptions
-        AppOptions = new AppOptions();
-        var appOptionsConfigurationSectionValue = Configuration.GetSection(AppOptions.Position).Value;
-        if (appOptionsConfigurationSectionValue != null)
+        var appOptions = ConfigurationBinder.Get<AppOptions>(Configuration.GetSection("App"));
+        if (appOptions != null)
         {
-            AppOptions = JsonConvert.DeserializeObject<AppOptions>(appOptionsConfigurationSectionValue)!;
+            AppOptions = appOptions;
         }
-        DefaultModes.AddDefaultModes(AppOptions);
 
         // Instantiate classes
         App app = new App(AppOptions);
@@ -51,6 +58,8 @@ class Program
     static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
     {
         Console.WriteLine("Ctrl+C detected. Restoring to the original state...");
+
+        SwitchingStatusProcessing = false;
 
         Environment.Exit(0);
     }

@@ -33,7 +33,7 @@ public class UserMenu
         ConsoleSpiner spinner = new ConsoleSpiner();
         Console.WriteLine($"Press CTRL-C to exit");
         Console.WriteLine($"Press CTRL-SPACE to switch mode");
-        Console.Write($"Running in {Program.Mode} mode");
+        Console.Write($"Running in {Program.Mode.Name} mode");
 
         while (true)
         {
@@ -44,6 +44,7 @@ public class UserMenu
                 if ((keyInfo.Modifiers & ConsoleModifiers.Control) != 0 && keyInfo.Key == ConsoleKey.Spacebar)
                 {
                     spinner.Stop();
+                    Program.SwitchingStatusProcessing = false;
                     HandleMode();
                 }
             }
@@ -64,12 +65,13 @@ public class UserMenu
 
         if (userInput != null)
         {
-            var switchingMode = _appOptions.Modes.FirstOrDefault(x => x.Name.ToLower() == userInput.ToLower());
+            var switchingMode = _appOptions.UserOptions.Modes.FirstOrDefault(x => x.Name.ToLower() == userInput.ToLower());
 
             if (switchingMode != null)
             {
                 Console.WriteLine($"Switching to {userInput} mode...");
-                Program.Mode = userInput;
+                Program.Mode = switchingMode;
+                Program.SwitchingStatusProcessing = true;
             }
             else
             {
@@ -102,9 +104,9 @@ public class UserMenu
     private string AvailableModesInfo()
     {
         var message = "Available modes: \n";
-        if (_appOptions.Modes.Count != 0)
+        if (_appOptions.UserOptions.Modes.Count != 0)
         {
-            foreach (var mode in _appOptions.Modes)
+            foreach (var mode in _appOptions.UserOptions.Modes)
             {
                 message += mode.Name + "\n";
             }

@@ -17,7 +17,7 @@ public class DefaultModes
     {
         foreach (var mode in _defaultModes)
         {
-            appOptions.Modes.Add(mode);
+            appOptions.UserOptions.Modes.Add(mode);
         }
     }
 }
