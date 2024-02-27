@@ -10,6 +10,8 @@ class Program
 
     static async Task Main(string[] args)
     {
+        Console.CancelKeyPress += new ConsoleCancelEventHandler(Console_CancelKeyPress);
+
         Program program = new Program();
         await program.RunAsync();
     }
@@ -40,19 +42,16 @@ class Program
         // Start tasks
         Task programLogicTask = Task.Run(() => app.Run());
         Task programUserMenu = Task.Run(() => userMenu.Run());
-        Task userInputTask = Task.Run(() => userInputHandler.HandleInput());
-        Task exitTask = Task.Run(() =>
-        {
-            if (Mode == DefaultModes.ExitMode)
-            {
-                programLogicTask.Dispose();
-                userInputTask.Dispose();
-                Environment.Exit(0);
-            }
-        });
+        Task userInputTask = Task.Run(() => userInputHandler.HandleMode());
 
         // Wait for tasks to complete
         await Task.WhenAll(programLogicTask, userInputTask);
     }
 
+    static void Console_CancelKeyPress(object sender, ConsoleCancelEventArgs e)
+    {
+        Console.WriteLine("Ctrl+C detected. Restoring to the original state...");
+
+        Environment.Exit(0);
+    }
 }
