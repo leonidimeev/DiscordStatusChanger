@@ -22,7 +22,7 @@ internal class UserInputHandler
                     Program.Mode = DefaultModes.ExitMode;
                 }
 
-                var switchingMode = _appOptions.Modes.FirstOrDefault(x => x.Name == userInput);
+                var switchingMode = _appOptions.Modes.FirstOrDefault(x => x.Name.ToLower() == userInput.ToLower());
 
                 if (switchingMode != null)
                 {

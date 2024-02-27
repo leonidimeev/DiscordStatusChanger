@@ -1,11 +1,11 @@
 ﻿
 namespace DiscordStatusScheduler;
 
-internal class DefaultModes
+public class DefaultModes
 {
     public static string ExitMode = "Exit";
 
-    private List<Mode> _defaultModes = new List<Mode>()
+    private static List<Mode> _defaultModes = new List<Mode>()
     {
         new Mode()
         {
@@ -19,7 +19,7 @@ internal class DefaultModes
         }
     };
 
-    public void AddDefaultModes(AppOptions appOptions)
+    public static void AddDefaultModes(AppOptions appOptions)
     {
         foreach (var mode in _defaultModes)
         {
