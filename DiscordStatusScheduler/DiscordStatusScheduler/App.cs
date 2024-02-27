@@ -20,9 +20,9 @@ public class App
         {
             if (Program.SwitchingStatusProcessing)
             {
-                foreach (var status in Program.Mode.StatusSet) 
+                foreach (var status in Program.Mode.StatusSet)
                 {
-                    discordClient.StatusTextChange(status, status_set[status_selector]);
+                    var statusTextChangeResponse = await discordClient.StatusTextChangeAsync(status, status_set[status_selector]);
                     status_selector += 1;
                     if (status_selector == status_set.Length)
                     {
